@@ -27,6 +27,12 @@ export default function ChildOnboardingPage() {
       return;
     }
 
+    // If child already has complete profile, redirect to dashboard
+    if (profile && profile.role === 'child' && profile.name && profile.age) {
+      router.push('/child/dashboard');
+      return;
+    }
+
     // Pre-fill form if profile data exists
     if (profile) {
       setName(profile.name || '');
@@ -306,7 +312,7 @@ export default function ChildOnboardingPage() {
               <h1 className='text-2xl font-bold text-primary-600'>ONE EDU</h1>
               <span className='text-gray-500'>Profile Setup</span>
             </div>
-            
+
             <div className='flex items-center space-x-4'>
               <span className='text-gray-700 text-sm'>
                 Hi, {name || 'there'}! 👋
@@ -325,24 +331,24 @@ export default function ChildOnboardingPage() {
 
       <div className='py-12 px-4 sm:px-6 lg:px-8'>
         <div className='max-w-2xl mx-auto'>
-        {/* Progress Bar */}
-        {step <= 3 && (
-          <div className='mb-12'>
-            <div className='flex justify-center mb-4'>
-              <div className='text-sm text-gray-500'>Step {step} of 3</div>
+          {/* Progress Bar */}
+          {step <= 3 && (
+            <div className='mb-12'>
+              <div className='flex justify-center mb-4'>
+                <div className='text-sm text-gray-500'>Step {step} of 3</div>
+              </div>
+              <div className='w-full bg-gray-200 rounded-full h-2'>
+                <div
+                  className='bg-primary-500 h-2 rounded-full transition-all duration-300'
+                  style={{ width: `${(step / 3) * 100}%` }}
+                ></div>
+              </div>
             </div>
-            <div className='w-full bg-gray-200 rounded-full h-2'>
-              <div
-                className='bg-primary-500 h-2 rounded-full transition-all duration-300'
-                style={{ width: `${(step / 3) * 100}%` }}
-              ></div>
-            </div>
-          </div>
-        )}
+          )}
 
-        <div className='card'>{renderStep()}</div>
+          <div className='card'>{renderStep()}</div>
 
-        {/* Footer */}
+          {/* Footer */}
           <div className='text-center mt-8'>
             <p className='text-sm text-gray-500'>
               Safe, fun, and personalized learning for every child

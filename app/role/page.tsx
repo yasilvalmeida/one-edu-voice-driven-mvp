@@ -20,8 +20,15 @@ export default function RolePage() {
     if (profile?.role) {
       if (profile.role === 'parent') {
         router.push('/parent');
-      } else {
-        router.push('/child/onboarding');
+      } else if (profile.role === 'child') {
+        // Check if child profile is complete (has name and age)
+        if (profile.name && profile.age) {
+          // Profile is complete, go to dashboard
+          router.push('/child/dashboard');
+        } else {
+          // Profile is incomplete, go to onboarding
+          router.push('/child/onboarding');
+        }
       }
     }
   }, [user, profile, router]);
@@ -41,6 +48,7 @@ export default function RolePage() {
       if (role === 'parent') {
         router.push('/parent');
       } else {
+        // For child role, always go to onboarding first to set up profile
         router.push('/child/onboarding');
       }
     } catch (error) {

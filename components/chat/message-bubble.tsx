@@ -11,6 +11,38 @@ export default function MessageBubble({
   message,
   isFromAstra,
 }: MessageBubbleProps) {
+  // Format timestamp in a kid-friendly way
+  const formatTimestamp = (timestamp: Date) => {
+    const now = new Date();
+    const messageDate = new Date(timestamp);
+
+    // Check if it's today
+    const isToday = now.toDateString() === messageDate.toDateString();
+
+    // Check if it's yesterday
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const isYesterday = yesterday.toDateString() === messageDate.toDateString();
+
+    const timeString = messageDate.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    if (isToday) {
+      return `Today at ${timeString}`;
+    } else if (isYesterday) {
+      return `Yesterday at ${timeString}`;
+    } else {
+      // For older dates, show month and day
+      const dateString = messageDate.toLocaleDateString([], {
+        month: 'short',
+        day: 'numeric',
+      });
+      return `${dateString} at ${timeString}`;
+    }
+  };
+
   return (
     <div
       className={`flex ${isFromAstra ? 'justify-start' : 'justify-end'} mb-4`}
@@ -48,10 +80,7 @@ export default function MessageBubble({
                 isFromAstra ? 'text-gray-500' : 'text-primary-100'
               }`}
             >
-              {new Date(message.timestamp).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
+              {formatTimestamp(message.timestamp)}
             </p>
           )}
         </div>
