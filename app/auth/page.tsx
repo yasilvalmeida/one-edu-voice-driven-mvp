@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/auth-context';
 import { useToast } from '@/components/toast';
@@ -16,6 +16,23 @@ export default function AuthPage() {
   const { signIn, signUp } = useUser();
   const { showToast } = useToast();
   const router = useRouter();
+
+  // Check for error messages from URL (e.g., from auth callback)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlError = urlParams.get('error');
+    if (urlError) {
+      setError(urlError);
+      showToast({
+        type: 'error',
+        title: 'Authentication Error',
+        message: urlError,
+        duration: 6000,
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [showToast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,8 +68,8 @@ export default function AuthPage() {
             type: 'success',
             title: 'Account Created Successfully!',
             message:
-              'Please check your email to confirm your account before signing in.',
-            duration: 8000,
+              'Please check your email and click the confirmation link to activate your account.',
+            duration: 10000,
           });
           // Switch to login mode
           setIsLogin(true);

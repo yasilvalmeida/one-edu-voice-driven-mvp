@@ -67,6 +67,20 @@ const securityChecks = [
     check: () => !process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY,
     fix: 'Remove NEXT_PUBLIC_ prefix from service role key - it should be server-side only!',
   },
+  {
+    name: 'App URL configured for production',
+    check: () => {
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+      return (
+        !appUrl ||
+        appUrl.includes('localhost') ||
+        appUrl.includes('vercel.app') ||
+        appUrl.includes('your-domain')
+      );
+    },
+    fix: 'Set NEXT_PUBLIC_APP_URL to your production domain (e.g., https://yourdomain.vercel.app)',
+    warning: true,
+  },
 ];
 
 let allPassed = true;

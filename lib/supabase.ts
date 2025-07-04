@@ -32,7 +32,13 @@ const useMockClient =
 // This uses the anon key and is safe for browser use
 export const supabase = useMockClient
   ? createClient('https://mock.supabase.co', 'mock-key')
-  : createClient(supabaseUrl, supabaseAnonKey);
+  : createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+      },
+    });
 
 // 🔴 SERVER-SIDE SUPABASE CLIENT (Admin)
 // This uses the service role key and should ONLY be used on the server
