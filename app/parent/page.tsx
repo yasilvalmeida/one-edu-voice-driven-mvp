@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/auth-context';
+import Header from '@/components/layout/header';
 
 export default function ParentPage() {
   const { user, profile, signOut } = useUser();
@@ -19,7 +20,7 @@ export default function ParentPage() {
     }
   }, [user, profile, router]);
 
-  const handleSignOut = async () => {
+  const handleLogout = async () => {
     await signOut();
     router.push('/auth');
   };
@@ -38,27 +39,13 @@ export default function ParentPage() {
   return (
     <div className='min-h-screen bg-gradient-to-br from-secondary-50 to-primary-50'>
       {/* Header */}
-      <header className='bg-white shadow-sm border-b'>
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-          <div className='flex justify-between items-center h-16'>
-            <div className='flex items-center'>
-              <h1 className='text-2xl font-bold text-primary-600'>ONE EDU</h1>
-              <span className='ml-4 text-gray-500'>Parent Dashboard</span>
-            </div>
-            <div className='flex items-center space-x-4'>
-              <span className='text-gray-700'>
-                Welcome, {profile.name || 'Parent'}!
-              </span>
-              <button
-                onClick={handleSignOut}
-                className='text-gray-500 hover:text-gray-700 text-sm'
-              >
-                Sign out
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header
+        subtitle='Parent Dashboard'
+        userInfo={{
+          name: profile.name || 'Parent',
+        }}
+        onLogout={handleLogout}
+      />
 
       {/* Main Content */}
       <main className='max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8'>

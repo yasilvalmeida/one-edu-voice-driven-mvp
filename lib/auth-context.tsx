@@ -85,7 +85,25 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   // Sign out
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      // Clear local state immediately
+      setUser(null);
+      setProfile(null);
+
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        console.error('Error signing out:', error);
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error during sign out:', error);
+      // Even if there's an error, we want to clear local state
+      setUser(null);
+      setProfile(null);
+      throw error;
+    }
   };
 
   // Update profile

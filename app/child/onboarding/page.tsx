@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/auth-context';
 import { useToast } from '@/components/toast';
+import Header from '@/components/layout/header';
 
 export default function ChildOnboardingPage() {
   const [name, setName] = useState('');
@@ -50,7 +51,8 @@ export default function ChildOnboardingPage() {
         message: 'You have been logged out successfully.',
         duration: 3000,
       });
-      router.push('/auth');
+      // Use replace instead of push to prevent back navigation
+      router.replace('/auth');
     } catch (error) {
       console.error('Error logging out:', error);
       showToast({
@@ -59,6 +61,8 @@ export default function ChildOnboardingPage() {
         message: 'Failed to log out. Please try again.',
         duration: 4000,
       });
+      // Even if there's an error, redirect to auth page
+      router.replace('/auth');
     }
   };
 
@@ -79,8 +83,7 @@ export default function ChildOnboardingPage() {
         return;
       }
 
-      // For now, show completion message
-      // TODO: Redirect to child dashboard
+      // Show completion message with navigation options
       setStep(4);
     } catch (error) {
       console.error('Error saving profile:', error);
@@ -305,29 +308,13 @@ export default function ChildOnboardingPage() {
   return (
     <div className='min-h-screen bg-gradient-to-br from-primary-50 to-accent-50'>
       {/* Header with Logout */}
-      <header className='bg-white shadow-sm border-b'>
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-          <div className='flex justify-between items-center h-16'>
-            <div className='flex items-center space-x-4'>
-              <h1 className='text-2xl font-bold text-primary-600'>ONE EDU</h1>
-              <span className='text-gray-500'>Profile Setup</span>
-            </div>
-
-            <div className='flex items-center space-x-4'>
-              <span className='text-gray-700 text-sm'>
-                Hi, {name || 'there'}! 👋
-              </span>
-              <button
-                onClick={handleLogout}
-                className='text-sm bg-red-100 text-red-700 px-3 py-1 rounded-full hover:bg-red-200 transition-colors'
-                title='Logout'
-              >
-                👋 Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header
+        subtitle='Profile Setup'
+        userInfo={{
+          name: name || 'there',
+        }}
+        onLogout={handleLogout}
+      />
 
       <div className='py-12 px-4 sm:px-6 lg:px-8'>
         <div className='max-w-2xl mx-auto'>
