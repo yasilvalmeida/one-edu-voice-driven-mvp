@@ -107,7 +107,7 @@ export default function Header({
               >
                 {button.icon && <span>{button.icon}</span>}
                 {button.hideTextOnMobile ? (
-                  <span className='hidden md:inline'>{button.label}</span>
+                  <span className='hidden md:inline ml-1'>{button.label}</span>
                 ) : (
                   <span>{button.label}</span>
                 )}
