@@ -235,7 +235,6 @@ export default function ChildDashboardPage() {
                 💬 Start Chatting
               </button>
               <button
-                onClick={() => window.location.reload()}
                 className='bg-gradient-to-r from-secondary-500 to-secondary-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-secondary-600 hover:to-secondary-700 transition-all duration-200 shadow-md hover:shadow-lg'
               >
                 🔄 Refresh Progress
