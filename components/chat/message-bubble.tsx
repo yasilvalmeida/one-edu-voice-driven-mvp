@@ -1,15 +1,18 @@
 'use client';
 
 import { ChatMessage } from '@/lib/openai';
+import SpeakButton from './speak-button';
 
 interface MessageBubbleProps {
   message: ChatMessage;
   isFromAstra: boolean;
+  autoSpeak?: boolean;
 }
 
 export default function MessageBubble({
   message,
   isFromAstra,
+  autoSpeak = false,
 }: MessageBubbleProps) {
   // Format timestamp in a kid-friendly way
   const formatTimestamp = (timestamp: Date) => {
@@ -73,16 +76,29 @@ export default function MessageBubble({
             {message.content}
           </p>
 
-          {/* Timestamp */}
-          {message.timestamp && (
-            <p
-              className={`text-xs mt-1 ${
-                isFromAstra ? 'text-gray-500' : 'text-primary-100'
-              }`}
-            >
-              {formatTimestamp(message.timestamp)}
-            </p>
-          )}
+          {/* Timestamp and Voice Button */}
+          <div className={`flex items-center justify-between mt-1 ${
+            isFromAstra ? '' : 'flex-row-reverse'
+          }`}>
+            {message.timestamp && (
+              <p
+                className={`text-xs ${
+                  isFromAstra ? 'text-gray-500' : 'text-primary-100'
+                }`}
+              >
+                {formatTimestamp(message.timestamp)}
+              </p>
+            )}
+
+            {/* Speak Button for Astra's messages */}
+            {isFromAstra && (
+              <SpeakButton
+                text={message.content}
+                size="sm"
+                className="ml-2"
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

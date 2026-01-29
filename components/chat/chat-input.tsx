@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import VoiceButton from './voice-button';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -11,9 +12,10 @@ interface ChatInputProps {
 export default function ChatInput({
   onSendMessage,
   disabled = false,
-  placeholder = 'Type your message to Astra...',
+  placeholder = 'Type or speak your message to Astra...',
 }: ChatInputProps) {
   const [message, setMessage] = useState('');
+  const [isListening, setIsListening] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,16 +33,37 @@ export default function ChatInput({
     }
   };
 
+  const handleVoiceTranscript = (transcript: string) => {
+    // When voice input is finalized, send the message directly
+    if (transcript.trim()) {
+      onSendMessage(transcript.trim());
+    }
+  };
+
+  const handleListeningChange = (listening: boolean) => {
+    setIsListening(listening);
+    if (listening) {
+      setMessage(''); // Clear any typed text when starting voice
+    }
+  };
+
   return (
     <div className='border-t border-gray-200 p-4 bg-white'>
-      <form onSubmit={handleSubmit} className='flex space-x-3'>
+      <form onSubmit={handleSubmit} className='flex items-center space-x-3'>
+        {/* Voice Input Button */}
+        <VoiceButton
+          onTranscript={handleVoiceTranscript}
+          onListeningChange={handleListeningChange}
+          disabled={disabled}
+        />
+
         <div className='flex-1'>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={placeholder}
-            disabled={disabled}
+            placeholder={isListening ? 'Listening...' : placeholder}
+            disabled={disabled || isListening}
             rows={1}
             className='w-full px-4 py-3 border border-gray-300 rounded-full resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed'
             style={{
@@ -53,7 +76,7 @@ export default function ChatInput({
 
         <button
           type='submit'
-          disabled={!message.trim() || disabled}
+          disabled={!message.trim() || disabled || isListening}
           className='flex-shrink-0 w-12 h-12 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-full flex items-center justify-center transition-colors duration-200'
         >
           {disabled ? (
@@ -77,7 +100,9 @@ export default function ChatInput({
       </form>
 
       <p className='text-xs text-gray-500 mt-2 text-center'>
-        Press Enter to send, Shift+Enter for new line
+        {isListening
+          ? '🎤 Listening... Speak clearly, then I\'ll send your message!'
+          : 'Tap the microphone to speak, or type your message'}
       </p>
     </div>
   );
