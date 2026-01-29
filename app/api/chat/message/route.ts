@@ -4,6 +4,7 @@ import {
   ChatMessage,
   isOpenAIConfigured,
 } from '@/lib/openai';
+import { awardXP, detectSkill, XP_REWARDS } from '@/lib/gamification';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { messages, childName } = body;
+    const { messages, childName, userId } = body;
 
     // Validate request
     if (!messages || !Array.isArray(messages)) {
@@ -35,9 +36,36 @@ export async function POST(request: NextRequest) {
     // Send to OpenAI
     const response = await sendMessageToAstra(messages, childName);
 
+    // Award XP if userId is provided
+    let xpReward = null;
+    if (userId) {
+      try {
+        const lastMessage = messages[messages.length - 1];
+        const userMessage = lastMessage?.content || '';
+
+        // Detect skill from message
+        const skill = detectSkill(userMessage);
+
+        // Check if it's a question (bonus XP)
+        const isQuestion = userMessage.includes('?') ||
+          userMessage.toLowerCase().startsWith('why') ||
+          userMessage.toLowerCase().startsWith('how') ||
+          userMessage.toLowerCase().startsWith('what');
+
+        const baseXP = isQuestion ? XP_REWARDS.QUESTION_ASKED : XP_REWARDS.CHAT_MESSAGE;
+        const reason = isQuestion ? 'Asked a question' : 'Sent a message';
+
+        xpReward = await awardXP(userId, baseXP, reason, skill || undefined);
+      } catch (xpError) {
+        console.error('Failed to award XP:', xpError);
+        // Don't fail the request if XP awarding fails
+      }
+    }
+
     return NextResponse.json({
       message: response,
       timestamp: new Date().toISOString(),
+      xpReward,
     });
   } catch (error) {
     console.error('Chat API error:', error);
